@@ -19,8 +19,8 @@ const int SCL_Pin = 3;
 const int SDA_Pin = 2;  
 const int AnalogIn_Pin = A0;
 
-#define FlashSpeed 250 //number of loops to run before changing state of flashing led
-#define LaunchDelay 200 //delay ms to wait after launch is a go before checking again.
+#define FlashSpeed 200 //number of loops to run before changing state of flashing led
+#define LaunchDelay 50 //delay ms to wait after launch is a go before checking again.
 #define maxsteps 20 //maximum number of steps to support.
   //caution not to exceed eeprom storage.
   //eeprom mapping currently places 6 saves on 128 byte boundaries
