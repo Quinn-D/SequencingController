@@ -4,14 +4,16 @@ Instructions for operation:
 Quick Key:
 STATUS: Toggle/Refresh display
 Unlabeled key: Enter/Exit lockout
-INFO: display the current sequence
+INFO: Display the current sequence
 Control 1-6: Load sequence 1-6
 Shift 1-6: Save sequence 1-6
 Shift-F1: Reset controller
-A: toggle state of HSIa
-B: toggle state of HSIb
-C: toggle state of main trigger button LED
-
+A: Toggle state of HSIa
+B: Toggle state of HSIb
+C: Toggle state of main trigger button LED
+CHANGE: Edit the sequence
+TESTMODE: Enter/Exit testing mode
+Control Unlabeled key: Change passcode
 
 The hand controller has a 4 line by 20 character display at the top displaying system status or prompts for input.
 
