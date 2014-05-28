@@ -57,7 +57,7 @@ int ButtonFlashCounter; //counter to support flashing.
 
 unsigned int sequence[maxsteps][3];  //[step number][value]
   //value 0 - number of ms to wait before doing this step
-  //value 1 - channel to activate.  0-5. ff-end of sequence.  fe-illegal
+  //value 1 - channel to activate.  0-5. ff-end of sequence.  fe-illegal.  0-5 corresponds to outputs 1-6
   //value 2 - state to set channel. 0-off, 1-on
 
 #define masterpasscodelength 8
@@ -235,9 +235,10 @@ void setup() {
   for (int i = 0; i < 16; i++)
     Passcode[i] = EEPROM.read(1008+i);
     
-  delay(2000); //delay to allow paddle processor to boot
+  delay(2000); //delay to allow paddle processor to boot before printing anything to lcd.
 
   LockScreen();  //start locked
+  LeftButtonLEDState = 1;
 
   ClearLCD();
   FullUpdate();
@@ -287,6 +288,9 @@ byte EnterPasscode()
   int receivedbutton = -1;
   int receivecount = 0;
   int receivedsequence[15];
+  LeftButtonLEDState = 0;
+  RightButtonLEDState = 0;
+  UpdateButtonLEDs();
   while (receivedbutton != ENTERkey)
   {
     receivedbutton = Serial1.read();
@@ -298,6 +302,7 @@ byte EnterPasscode()
     }
     if (receivecount == 15)
       break;
+    UpdateButtonLEDs();
     delay(1);
   }
   byte correct = 0;
@@ -329,10 +334,10 @@ byte EnterPasscode()
 void LockScreen()
 {
   while (((Serial1.read()) != -1));  //Clear off the input buffer
-  RightButtonLEDState = 2;
-  LeftButtonLEDState = 2;
   while (1)
   {
+    RightButtonLEDState = 2;
+    LeftButtonLEDState = 2;
     Serial1.write("\n\n\n\r    ");
     delay(50);
     Serial1.write("** LOCKED **\r\n");
@@ -707,8 +712,8 @@ void UpdateSequence()
 //Query for channel
       Serial1.write("\r\nChannel: ");
       if (sequence[i][1] != 0xfe)  //only print the current channel if it is legal
-        Serial1.print(sequence[i][1]);
-      value = CheckForChInput();
+        Serial1.print(sequence[i][1]+1);
+      value = CheckForChInput();  //returns 0-5 for keypad input 1-6
       switch (value)
       {
         case 0:
@@ -718,8 +723,8 @@ void UpdateSequence()
         case 4:
         case 5:
           Serial1.write("\rChannel: "); //overwrite line
-          Serial1.print(value+1);
-          sequence[i][1] = value;
+          Serial1.print(value+1);  //print 1-6 for 0-5
+          sequence[i][1] = value;  //save 0-5
           edited = 1; //mark as the sequence has been edited
           break;
         case 0x10: //pressed enter, leave data as-is ,go on.
@@ -794,7 +799,7 @@ void RunSequence()
     if (digitalRead(LeftButton_Pin) != 0)  //confirm arming is still held
       return;
     int pinnumber = 0xff;
-    switch (sequence[i][1])
+    switch (sequence[i][1])   //map values 0-5 to outputs 1-6
     {
       case 0:
         pinnumber = Output1_Pin;
@@ -966,6 +971,8 @@ void loop() {
       break;
     case CHANGEkey:
       LeftButtonLEDState = 0;
+      RightButtonLEDState = 0;
+      UpdateButtonLEDs();
       UpdateSequence();
       numsteps = sequencelength();
       LeftButtonLEDState = 1;
@@ -1047,80 +1054,111 @@ noTone(Speaker_Pin);
     case BLANKkey:
       LockScreen();
       delay(100);
+      LeftButtonLEDState = 1;
       FullUpdate();
       break;
     case INFOkey:
       LeftButtonLEDState = 0;
+      RightButtonLEDState = 0;
+      UpdateButtonLEDs();
       printsequence();  //print sequence, 3 lines at a time
       LeftButtonLEDState = 1;
       break;
     case CtlONEkey:
       LeftButtonLEDState = 0;
+      RightButtonLEDState = 0;
+      UpdateButtonLEDs();
       loadmenu(1);  //control 1-6 - prompt and load saved sequences
       LeftButtonLEDState = 1;
       break;
     case CtlTWOkey:
       LeftButtonLEDState = 0;
+      RightButtonLEDState = 0;
+      UpdateButtonLEDs();
       loadmenu(2);  //control 1-6 - prompt and load saved sequences
       LeftButtonLEDState = 1;
       break;
     case CtlTHREEkey:
       LeftButtonLEDState = 0;
+      RightButtonLEDState = 0;
+      UpdateButtonLEDs();
       loadmenu(3);  //control 1-6 - prompt and load saved sequences
       LeftButtonLEDState = 1;
       break;
     case CtlFOURkey:
       LeftButtonLEDState = 0;
+      RightButtonLEDState = 0;
+      UpdateButtonLEDs();
       loadmenu(4);  //control 1-6 - prompt and load saved sequences
       LeftButtonLEDState = 1;
       break;
     case CtlFIVEkey:
       LeftButtonLEDState = 0;
+      RightButtonLEDState = 0;
+      UpdateButtonLEDs();
       loadmenu(5);  //control 1-6 - prompt and load saved sequences
       LeftButtonLEDState = 1;
       break;
     case CtlSIXkey:
       LeftButtonLEDState = 0;
+      RightButtonLEDState = 0;
+      UpdateButtonLEDs();
       loadmenu(6);  //control 1-6 - prompt and load saved sequences
       LeftButtonLEDState = 1;
       break;
     case SftONEkey:
       LeftButtonLEDState = 0;
+      RightButtonLEDState = 0;
+      UpdateButtonLEDs();
       savemenu(1);  //shift 1-6 - prompt and save sequence
       LeftButtonLEDState = 1;
       break;
     case SftTWOkey:
       LeftButtonLEDState = 0;
+      RightButtonLEDState = 0;
+      UpdateButtonLEDs();
       savemenu(2);  //shift 1-6 - prompt and save sequence
       LeftButtonLEDState = 1;
       break;
     case SftTHREEkey:
       LeftButtonLEDState = 0;
+      RightButtonLEDState = 0;
+      UpdateButtonLEDs();
       savemenu(3);  //shift 1-6 - prompt and save sequence
       LeftButtonLEDState = 1;
       break;
     case SftFOURkey:
       LeftButtonLEDState = 0;
+      RightButtonLEDState = 0;
+      UpdateButtonLEDs();
       savemenu(4);  //shift 1-6 - prompt and save sequence
       LeftButtonLEDState = 1;
       break;
     case SftFIVEkey:
       LeftButtonLEDState = 0;
+      RightButtonLEDState = 0;
+      UpdateButtonLEDs();
       savemenu(5);  //shift 1-6 - prompt and save sequence
       LeftButtonLEDState = 1;
       break;
     case SftSIXkey:
       LeftButtonLEDState = 0;
+      RightButtonLEDState = 0;
+      UpdateButtonLEDs();
       savemenu(6);  //shift 1-6 - prompt and save sequence
       LeftButtonLEDState = 1;
       break;
     case SftF1key:
       LeftButtonLEDState = 0;
+      RightButtonLEDState = 0;
+      UpdateButtonLEDs();
       Reset(); //prompt for reset, 
       LeftButtonLEDState = 1;
       break;
     case CtlBLANKkey:
       LeftButtonLEDState = 0;
+      RightButtonLEDState = 0;
+      UpdateButtonLEDs();
       ChangePasscode();
       LeftButtonLEDState = 1;
       FullUpdate();
@@ -1150,6 +1188,5 @@ noTone(Speaker_Pin);
   UpdateButtonLEDs(); //update button LEDs.
   delay(1);  //Small loop delay to support debounce.  This defines minimum debounce sample time.
  
-//add pin change interrupt to left button so if it is realeased, turn off solenoid immediately.
 }
 
