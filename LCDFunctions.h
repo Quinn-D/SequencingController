@@ -25,13 +25,9 @@
 //untested.  Can do testing to see if there is a code to clear screen instead of overprinting it.
 void ClearLCD()
 {
-//  Serial1.write("                    ");
   Serial1.write("\r\n");
-//  Serial1.write("                    ");
   Serial1.write("\r\n");
-//  Serial1.write("                    ");
   Serial1.write("\r\n");
-//  Serial1.write("                    ");
   Serial1.write("\r\n");
 }
 
@@ -52,55 +48,28 @@ void FullUpdate()
     Serial1.write("ODE **\r\n");
   //line 2:
     Serial1.write("Key: ");
-    if (Key == 1)
-      Serial1.write('1');
-    else
-      Serial1.write('0');
+    Serial1.print(Key);
     Serial1.write(" Butn: ");
-    if (Button == 1)
-      Serial1.write('1');
-    else
-      Serial1.write('0');
+    Serial1.print(Button);
     Serial1.write(" In3:");
-    if (ExtraIn == 1)
-      Serial1.write('1');
-    else
-      Serial1.write('0');
+    Serial1.print(ExtraIn);
     Serial1.write("\r\n");
 
   //line 3:
     Serial1.write("HSIs:");
-    if (HSI1 == 1)
-      Serial1.write('1');
-    else
-      Serial1.write('0');
-    if (HSI2 == 1)
-      Serial1.write('1');
-    else
-      Serial1.write('0');
+    Serial1.print(HSI1);
+    Serial1.print(HSI2);
     Serial1.write(" LED:");
-    if (TriggerLED == 1)
-      Serial1.write('1');
-    else
-      Serial1.write('0');
+    Serial1.print(TriggerLED);
     Serial1.write(" Out4:");
-    if (ExtraOut == 1)
-      Serial1.write('1');
-    else
-      Serial1.write('0');
+    Serial1.print(ExtraOut);
     Serial1.write("\r\n");
     
   //line 4:
     Serial1.write("Sol1(Ign): ");
-    if (digitalRead(Output5_Pin) == 1)
-      Serial1.write('1');
-    else
-      Serial1.write('0');
+    Serial1.print(digitalRead(Output5_Pin));
     Serial1.write(" Sol2: ");
-    if (digitalRead(Output6_Pin) == 1)
-      Serial1.write('1');
-    else
-      Serial1.write('0');
+    Serial1.print(digitalRead(Output6_Pin));
     Serial1.write("\r");
     return;
   }
@@ -126,13 +95,7 @@ void FullUpdate()
     delay(10);
     Serial1.print(numsteps);
     Serial1.write(" Time:");
-    unsigned long totaltime = 0;
-    for (byte i = 0; i < maxsteps; i++)  //quick calc the sequence time
-    {
-      totaltime += sequence[i][0];
-      if (sequence[i][1] == 0xff)
-        break;
-    }
+    unsigned long totaltime = sequencetime();
     if (totaltime <= 9999)
       Serial1.write(' ');
     if (totaltime > 99999)
@@ -155,20 +118,11 @@ void FullUpdate()
     
   //line 4:
     Serial1.write("HSIa: ");
-    if (HSI1 == 1)
-      Serial1.write('1');
-    else
-      Serial1.write('0');
+    Serial1.print(HSI1);
     Serial1.write(" b: ");
-    if (HSI2 == 1)
-      Serial1.write('1');
-    else
-      Serial1.write('0');
+    Serial1.print(HSI2);
     Serial1.write("  Key: ");
-    if (Key == 1)
-      Serial1.write('1');
-    else
-      Serial1.write('0');
+    Serial1.print(Key);
     Serial1.write("\r");
   }
   else
@@ -198,14 +152,7 @@ void FullUpdate()
     else
       Serial1.write("Disarmed ");
     Serial1.write("Time:");
-    unsigned long totaltime = 0;
-    for (byte i = 0; i < maxsteps; i++)  //quick calc the sequence time
-    {
-      totaltime += sequence[i][0];
-      if (sequence[i][1] == 0xff)
-        break;
-    }
-
+    unsigned long totaltime = sequencetime();
     if (totaltime <= 99999)
       Serial1.write(' ');
     if (totaltime > 999999)
@@ -222,44 +169,23 @@ void FullUpdate()
   
   //line 3:
     Serial1.write("Key: ");
-    if (Key == 1)
-      Serial1.write('1');
-    else
-      Serial1.write('0');
+    Serial1.print(Key);
     Serial1.write(" Butn: ");
-    if (Button == 1)
-      Serial1.write('1');
-    else
-      Serial1.write('0');
+    Serial1.print(Button);
     Serial1.write(" In3:");
-    if (ExtraIn == 1)
-      Serial1.write('1');
-    else
-      Serial1.write('0');
+    Serial1.print(ExtraIn);
     Serial1.write("\r\n");
     delay(20);
 
     
   //line 4:
     Serial1.write("HSIs:");
-    if (HSI1 == 1)
-      Serial1.write('1');
-    else
-      Serial1.write('0');
-    if (HSI2 == 1)
-      Serial1.write('1');
-    else
-      Serial1.write('0');
+    Serial1.print(HSI1);
+    Serial1.print(HSI1);
     Serial1.write(" LED:");
-    if (TriggerLED == 1)
-      Serial1.write('1');
-    else
-      Serial1.write('0');
+    Serial1.print(TriggerLED);
     Serial1.write(" Out4:");
-    if (ExtraOut == 1)
-      Serial1.write('1');
-    else
-      Serial1.write('0');
+    Serial1.print(ExtraOut);
     Serial1.write("\r");
   }
     
@@ -286,7 +212,7 @@ void printsequence()
       Serial1.write(' ');
       Serial1.print(sequence[i][0]);
       Serial1.write("ms Ch");
-      Serial1.print(sequence[i][1]+1);
+      Serial1.print(sequence[i][1]+1);  //print 1-6 for 0-5
       if (sequence[i][2] == 0)
         Serial1.write(" OFF");
       else
@@ -300,7 +226,7 @@ void printsequence()
     if (linecounter >= 2)  //check if printed 3 lines already
     {
       linecounter = 0;
-      Serial1.write("\r\nENT-cont  ESC-exit");
+      Serial1.write("\r\nESC-exit Other-cont");
       while (Serial1.available() == 0)
         delay(1);   //wait here until get a key
       if (Serial1.read() == ESCAPEkey)
@@ -324,33 +250,4 @@ void printsequence()
 
 
 
-
-//---------------testing junk:
-
-//void junksetup()
-//{
-//  sequence[0][0] = 100;
-//  sequence[0][1] = 1;
-//  sequence[0][2] = 1;
-//  sequence[1][0] = 100;
-//  sequence[1][1] = 1;
-//  sequence[1][2] = 0;
-//  sequence[2][0] = 100;
-//  sequence[2][1] = 2;
-//  sequence[2][2] = 1;
-//  sequence[3][0] = 100;
-//  sequence[3][1] = 2;
-//  sequence[3][2] = 0;
-//  sequence[4][0] = 0;
-//  sequence[4][1] = 0xff;
-//  sequence[4][2] = 0;
-//}
-
-
-//----------------------
-//|Pre: 0000ms - 0000ms|
-//|Ign: 0000ms - 0000ms|
-//|      *ARMED*       |
-//|HSIa: 1 b: 0  Key: 0|
-//----------------------
 
