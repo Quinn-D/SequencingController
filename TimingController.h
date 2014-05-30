@@ -2,12 +2,12 @@
 const int Input1_Pin = 11;  //DB15 input through Opto.  High means input grounded
 const int Input2_Pin = 4;  //DB15 input through Opto.  High means input grounded
 const int Input3_Pin = A5;  //DB15 input through Opto.  High means input grounded
-const int Output1_Pin = 5; //DB15 output thruogh darlington array.  High means drive output to ground.
-const int Output2_Pin = 6; //DB15 output thruogh darlington array.  High means drive output to ground.
-const int Output3_Pin = 9; //DB15 output thruogh darlington array.  High means drive output to ground.
-const int Output4_Pin = 10; //DB15 output thruogh darlington array.  High means drive output to ground.
-const int Output5_Pin = 12; //DB15 output thruogh darlington array.  High means drive output to ground.
-const int Output6_Pin = A4; //DB15 output thruogh darlington array.  High means drive output to ground.
+const int Output1_Pin = 5; //DB15 output through darlington array.  High means drive output to ground.
+const int Output2_Pin = 6; //DB15 output through darlington array.  High means drive output to ground.
+const int Output3_Pin = 9; //DB15 output through darlington array.  High means drive output to ground.
+const int Output4_Pin = 10; //DB15 output through darlington array.  High means drive output to ground.
+const int Output5_Pin = 12; //DB15 output through darlington array.  High means drive output to ground.
+const int Output6_Pin = A4; //DB15 output through darlington array.  High means drive output to ground.
 const int SoftSerialTX_Pin = 7; //output towards the RS232 level shifter for software serial on RJ11
 const int SoftSerialRX_Pin = 8; //input from the RS232 level shifter for software serial on RJ11
 const int Speaker_Pin = 13; //output through cap to speaker drive transistor.  Use PWM to drive.
@@ -20,7 +20,7 @@ const int SDA_Pin = 2;
 const int AnalogIn_Pin = A0;
 
 #define FlashSpeed 200 //number of loops to run before changing state of flashing led
-#define LaunchDelay 50 //delay ms to wait after launch is a go before checking again.
+#define LaunchDelay 50 //delay ms to wait after launch is a go before checking again.(extra level of debounce)
 #define maxsteps 20 //maximum number of steps to support.
   //caution not to exceed eeprom storage.
   //eeprom mapping currently places 6 saves on 128 byte boundaries
