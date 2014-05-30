@@ -79,6 +79,21 @@ byte sequencelength()
   return 0;
 }
 
+
+//returns the run time of the current sequence (unsigned long)
+unsigned long sequencetime()
+{
+  unsigned long totaltime = 0;
+  for (byte i = 0; i < maxsteps; i++)  //quick calc the sequence time
+  {
+    totaltime += sequence[i][0];
+    if (sequence[i][1] == 0xff)
+      break;
+  }
+  return totaltime;
+}
+
+
 //load a saved sequence
 //takes in which sequence to load
 //returns the number of steps
@@ -139,12 +154,11 @@ void Reset()
   delay(50);
   Serial1.write("oller?\r\n");
   delay(50);
-  Serial1.write("ENT-> Yes  ESC-> No \r\n");
+  Serial1.write("ENT->Yes  Other-> No\r\n");
   Serial1.write(0x07);  //send bell character.
   Serial1.write(0x07);  //send bell character.
   Serial1.write(0x07);  //send bell character.
-//Clear off the input buffer
-  while (((Serial1.read()) != -1));  
+  while (((Serial1.read()) != -1));  //Clear off the input buffer
   for (int i = 0; ((i < 10000) && (Serial1.available() == 0)); i++)
     delay(1);   //wait here until get a key, or timeout at 10sec
   if (Serial1.read() == ENTERkey)
@@ -442,12 +456,11 @@ void savemenu(byte number)
   Serial1.write("?\r\n");
   Serial1.write("ENT-");
   delay(50);
-  Serial1.write("> Yes  ");
+  Serial1.write("> Yes ");
   delay(150);
-  Serial1.write("ESC-> No \r\n");
+  Serial1.write("Other-> No\r\n");
   delay(100);
-//Clear off the input buffer
-  while (((Serial1.read()) != -1));  
+  while (((Serial1.read()) != -1));  //Clear off the input buffer
   for (int i = 0; ((i < 10000) && (Serial1.available() == 0)); i++)
     delay(1);   //wait here until get a key, or timeout at 10sec
   if (Serial1.read() == ENTERkey)
@@ -473,11 +486,10 @@ void loadmenu(byte number)
   Serial1.print(number);
   Serial1.write("?\r\n");
   delay(100);
-  Serial1.write("ENT-> Yes  ");
+  Serial1.write("ENT-> Yes ");
   delay(100);
-  Serial1.write("ESC-> No \r\n");
-//Clear off the input buffer
-  while (((Serial1.read()) != -1));  
+  Serial1.write("Other-> No\r\n");
+  while (((Serial1.read()) != -1));  //Clear off the input buffer
   for (int i = 0; ((i < 10000) && (Serial1.available() == 0)); i++)
     delay(1);   //wait here until get a key, or timeout at 10sec
   if (Serial1.read() == ENTERkey)
@@ -1188,5 +1200,13 @@ noTone(Speaker_Pin);
   UpdateButtonLEDs(); //update button LEDs.
   delay(1);  //Small loop delay to support debounce.  This defines minimum debounce sample time.
  
+ //need management of L/R button LEDs.
+ //Need test mode in order to test out hardware
+ //Then need lockout
+//testmode needs fixing/needs password
+//left/right button leds
+//need to add password at bootup
+//add pin change interrupt to left button so if it is realeased, turn off solenoid immediately.
+//need to confirm if delay can get messed up at loop of millis.
+//consider turning off trigger led when arm is disabled.
 }
-
